@@ -28,18 +28,19 @@ function cycle() {
 }
 
 function moveByMouse() {
-    if (buttons['m?ouse']) {
-        if (!isHoleHold) {
-            moveBalls();
-            if (!isBallHold) {
-                moveHoles();
-            }
-        } else if (!isBallHold) {
-            moveHoles();
-        }
-    } else {
+    if (!buttons['mouse']) {
         isBallHold = false;
         isHoleHold = false;
+        return;
+    }
+    
+    if (!isHoleHold) {
+        moveBalls();
+        if (!isBallHold) {
+            moveHoles();
+        }
+    } else if (!isBallHold) {
+        moveHoles();
     }
 }
 
@@ -56,6 +57,7 @@ function mouseBallCol() {
                 if (my >= bottom) {
                     if (my <= top) {
                         holdBall = i;
+                        isBallHold = true;
                         return true;
                     }
                 }
@@ -64,19 +66,14 @@ function mouseBallCol() {
     }
 }
 function moveBalls() {
-    if (isBallHold) {
+    if (isBallHold || mouseBallCol()) {
         balls[holdBall]['x'] = mx - ballSize / 2;
         balls[holdBall]['y'] = my - ballSize / 2;
         $('#ball' + holdBall).x(balls[holdBall]['x']);
         $('#ball' + holdBall).y(balls[holdBall]['y']);
-    } else if (mouseBallCol()) {
-        balls[holdBall]['x'] = mx - ballSize / 2;
-        balls[holdBall]['y'] = my - ballSize / 2;
-        $('#ball' + holdBall).x(balls[holdBall]['x']);
-        $('#ball' + holdBall).y(balls[holdBall]['y']);
-        isBallHold = true;
     }
 }
+
 function mouseHoleCol() {
     for (var i in holes) {
 
@@ -85,30 +82,22 @@ function mouseHoleCol() {
         var right = left + 2 * holeHAdd + holeSize;
         var top = bottom + 2 * holeHAdd + holeSize;
 
-        if (mx >= left) {
-            if (mx <= right) {
-                if (my >= bottom) {
-                    if (my <= top) {
-                        holdHole = i;
-                        return true;
-                    }
-                }
-            }
+        if (left < mx && mx <= right 
+            && bottom < my && my <= top) 
+        {
+            holdHole = i;
+            isHoleHold = true;
+            return true;
         }
     }
 }
+
 function moveHoles() {
-    if (isHoleHold) {
+    if (isHoleHold || mouseHoleCol()) {
         holes[holdHole]['x'] = mx - ballSize / 2;
         holes[holdHole]['y'] = my - ballSize / 2;
         $('#hole' + holdHole).x(mx - holeSize / 2);
         $('#hole' + holdHole).y(my - holeSize / 2);
-    } else if (mouseHoleCol()) {
-        holes[holdHole]['x'] = mx - ballSize / 2;
-        holes[holdHole]['y'] = my - ballSize / 2;
-        $('#hole' + holdHole).x(mx - holeSize / 2);
-        $('#hole' + holdHole).y(my - holeSize / 2);
-        isHoleHold = true;
     }
 }
 
