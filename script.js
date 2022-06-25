@@ -1,14 +1,15 @@
 const SEP = '_';
 var field = $('#field');
 var gamespeed = 10;
+var mouseTrackInterval = 10;
 var ballSize = $('.ball').width();
 var holeSize = $('.blackhole').width();
 var ballHAdd = 0;
 var holeHAdd = 0;
 
 var buttons = {};
-var balls = {1: {x: 100, y: 200, ang: 30, inert: 7, id: 1}};
-var holes = {1: {x: 0, y: 270, g: 9.8, id: 1}};
+var balls = {1: {x: 100, y: 200, ang: 30, inert: -7, id: 1}};
+var holes = {1: {x: 0, y: 270, g: -0.5, id: 1}};
 var isBallHold = false;
 var isHoleHold = false;
 var holdBall = 1;
@@ -17,10 +18,14 @@ var mx = 0;
 var my = 0;
 
 cycle();
+trackMouse();
+
+function trackMouse() {
+    moveByMouse();
+    setTimeout(trackMouse, mouseTrackInterval);
+}
 
 function cycle() {
-
-    moveByMouse();
 
     moveByVect();
 
@@ -118,9 +123,10 @@ function moveOneBall(ball, hole) {
     var fullDiffX = inertiaDiffX + gravityDiffX;
     var fullDiffY = inertiaDiffY + gravityDiffY;
     
-    
+
     ball['x'] = ball['x'] + fullDiffX;
     ball['y'] = ball['y'] + fullDiffY;
+
 
     $('#ball' + ball.id).x(ball['x']);
     $('#ball' + ball.id).y(ball['y']);
@@ -128,7 +134,7 @@ function moveOneBall(ball, hole) {
     tan = fullDiffY / fullDiffX;
     ball['ang'] = Math.atan(tan);
 
-    ball['inert'] = fullDiffY / Math.sin(ball['ang']);   
+//    ball['inert'] = fullDiffY / Math.sin(ball['ang']);   
     
 }
 
@@ -136,6 +142,7 @@ function moveByVect() {
     for (var i in balls) {
         for (var j in holes) {
             moveOneBall(balls[i], holes[j]);
+            console.log(balls[i])
         }
     }
 }
