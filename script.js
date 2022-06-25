@@ -7,8 +7,8 @@ var ballHAdd = 0;
 var holeHAdd = 0;
 
 var buttons = {};
-var balls = {1: {x: 100, y: 200, ang: 30, inert: 7}};
-var holes = {1: {x: 0, y: 270, g: 9.8}};
+var balls = {1: {x: 100, y: 200, ang: 30, inert: 7, id: 1}};
+var holes = {1: {x: 0, y: 270, g: 9.8, id: 1}};
 var isBallHold = false;
 var isHoleHold = false;
 var holdBall = 1;
@@ -22,7 +22,7 @@ function cycle() {
 
     moveByMouse();
 
-    //moveByVect();
+    moveByVect();
 
     setTimeout(cycle, gamespeed);
 }
@@ -101,29 +101,34 @@ function moveHoles() {
     }
 }
 
+function moveOneBall(ball, hole) {
+    
+    var x1 = ball['x'] + ball['inert'] * Math.cos(ball['ang']);
+    var y1 = ball['y'] + ball['inert'] * Math.sin(ball['ang']);
+
+    var xAddH = hole['x'] - ball['x'];
+    var yAddH = hole['y'] - ball['y'];
+
+    var tan = yAddH / xAddH;
+    var holeAng = Math.atan(tan);
+
+    var xAdd = hole['g'] * Math.cos(holeAng);
+    var yAdd = hole['g'] * Math.sin(holeAng);
+
+    $('#ball' + ball.id).x($('#ball' + ball.id).x() + x1 + xAdd);
+    $('#ball' + ball.id).y($('#ball' + ball.id).y() + y1 + yAdd);
+
+    tan = yAdd / xAdd;
+    ball['ang'] = Math.atan(tan);
+
+    ball['inert'] = Math.sin(ball['ang']) / yAdd;   
+    
+}
 
 function moveByVect() {
     for (var i in balls) {
         for (var j in holes) {
-            var x1 = balls[i]['x'] + balls[i]['inert'] * Math.cos(balls[i]['ang']);
-            var y1 = balls[i]['y'] + balls[i]['inert'] * Math.sin(balls[i]['ang']);
-
-            var xAddH = holes[j]['x'] - balls[i]['x'];
-            var yAddH = holes[j]['y'] - balls[i]['y'];
-
-            var tan = yAddH / xAddH;
-            var holeAng = Math.atan(tan);
-
-            var xAdd = holes[j]['g'] * Math.cos(holeAng);
-            var yAdd = holes[j]['g'] * Math.sin(holeAng);
-
-            $('#ball' + i).x(x1 + xAdd);
-            $('#ball' + i).y(y1 + yAdd);
-
-            tan = yAdd / xAdd;
-            balls[i]['ang'] = Math.atan(tan);
-
-            balls[i]['inert'] = Math.sin(balls[i]['ang']) / yAdd;
+            moveOneBall(balls[i], holes[j]);
         }
     }
 }
@@ -133,13 +138,15 @@ function moveByVect() {
 
 function create(type, left, bottom) {
     if (type === 'ball') {
-        var ball = {x: left, y: bottom, angle: 0, inert: 0};
-        balls[Object.keys(balls).length + 1] = ball;
+        var id = Object.keys(balls).length + 1;
+        var ball = {x: left, y: bottom, angle: 0, inert: 0, id: id};
+        balls[id] = ball;
         var html = `<div id="ball${Object.keys(balls).length}" class="ball" style="left: ${left}px; bottom: ${bottom}px"></div>`;
     }
     if (type === 'hole') {
-        var hole = {x: left, y: bottom};
-        holes[Object.keys(holes).length + 1] = hole;
+        var id = Object.keys(holes).length + 1;
+        var hole = {x: left, y: bottom, id: id};
+        holes[id] = hole;
         var html = `<div id="hole${Object.keys(holes).length}" class="blackhole" style="left: ${left}px; bottom: ${bottom}px"></div>`;
     }
     field.append(html);
