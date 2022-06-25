@@ -103,8 +103,8 @@ function moveHoles() {
 
 function moveOneBall(ball, hole) {
     
-    var x1 = ball['x'] + ball['inert'] * Math.cos(ball['ang']);
-    var y1 = ball['y'] + ball['inert'] * Math.sin(ball['ang']);
+    var inertiaDiffX = ball['inert'] * Math.cos(ball['ang']);
+    var inertiaDiffY = ball['inert'] * Math.sin(ball['ang']);
 
     var xAddH = hole['x'] - ball['x'];
     var yAddH = hole['y'] - ball['y'];
@@ -112,16 +112,23 @@ function moveOneBall(ball, hole) {
     var tan = yAddH / xAddH;
     var holeAng = Math.atan(tan);
 
-    var xAdd = hole['g'] * Math.cos(holeAng);
-    var yAdd = hole['g'] * Math.sin(holeAng);
+    var gravityDiffX = hole['g'] * Math.cos(holeAng);
+    var gravityDiffY = hole['g'] * Math.sin(holeAng);
+    
+    var fullDiffX = inertiaDiffX + gravityDiffX;
+    var fullDiffY = inertiaDiffY + gravityDiffY;
+    
+    
+    ball['x'] = ball['x'] + fullDiffX;
+    ball['y'] = ball['y'] + fullDiffY;
 
-    $('#ball' + ball.id).x($('#ball' + ball.id).x() + x1 + xAdd);
-    $('#ball' + ball.id).y($('#ball' + ball.id).y() + y1 + yAdd);
+    $('#ball' + ball.id).x(ball['x']);
+    $('#ball' + ball.id).y(ball['y']);
 
-    tan = yAdd / xAdd;
+    tan = fullDiffY / fullDiffX;
     ball['ang'] = Math.atan(tan);
 
-    ball['inert'] = Math.sin(ball['ang']) / yAdd;   
+    ball['inert'] = fullDiffY / Math.sin(ball['ang']);   
     
 }
 
