@@ -1,5 +1,4 @@
 var fieldH = $('#field').height();
-
 function fitToSizeEnd() {
     fieldH = $('#field').height();
 }
@@ -18,7 +17,6 @@ function fitToSizeEnd() {
   };
 })(jQuery);
 
-
 (function($) {
   $.fn.x = function(left) {
     
@@ -32,3 +30,19 @@ function fitToSizeEnd() {
     return offsetLeft;
   };
 })(jQuery);
+
+function cos(number) {
+    return Math.cos(number);
+}
+function sin(number) {
+    return Math.sin(number);
+}
+function tan(number) {
+    return Math.tan(number);
+}
+function atan(number) {
+    return Math.atan(number);
+}
+function sqrt(number) {
+    return Math.sqrt(number);
+}
