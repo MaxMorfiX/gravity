@@ -34,15 +34,29 @@ function fitToSizeEnd() {
 function cos(number) {
     return Math.cos(number);
 }
+
 function sin(number) {
     return Math.sin(number);
 }
+
 function tan(number) {
     return Math.tan(number);
 }
+
 function atan(number) {
     return Math.atan(number);
 }
+
 function sqrt(number) {
     return Math.sqrt(number);
+}
+
+function rToD(radians) {
+    var pi = Math.PI;
+    return radians * (180/pi);
+}
+
+function dToR(degrees) {
+    var pi = Math.PI;
+    return degrees * (pi/180);
 }

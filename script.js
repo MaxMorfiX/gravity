@@ -1,6 +1,7 @@
 const SEP = '_';
+const fEnablePhysics = true;
 var field = $('#field');
-var gamespeed = 10;
+var gameInterval = 10;
 var mouseTrackInterval = 10;
 var ballSize = $('.ball').width();
 var holeSize = $('.blackhole').width();
@@ -8,7 +9,7 @@ var ballHAdd = 0;
 var holeHAdd = 0;
 
 var buttons = {};
-var balls = {1: {x: 100, y: 200, ang: 30, inert: 0, m: 10}};
+var balls = {1: {x: 100, y: 200, ang: dToR(30), inert: 0, m: 10}};
 var holes = {1: {x: 200, y: 200, m: 1000000}};
 var isBallHold = false;
 var isHoleHold = false;
@@ -29,7 +30,7 @@ function cycle() {
 
     moveByVect();
 
-    setTimeout(cycle, gamespeed);
+    setTimeout(cycle, gameInterval);
 }
 
 function moveByMouse() {
@@ -114,39 +115,56 @@ function moveByVect() {
             var ball = balls[i];
             var a = ball.ang;
             
-            var holex = hole.x - ball.x;
-            var holey = hole.y - ball.y;
+            var holeToBallX = hole.x - ball.x;
+            var holeToBallY = hole.y - ball.y;
             
-            var c = atan(holey / holex);
+            var c = atan(holeToBallY / holeToBallX);
+
+            if (holeToBallX < 0) {
+                c = c + Math.PI;
+            }
             
-            var holer = sqrt(holex*holex + holey*holey);
-            var holeg = hole.m * ball.m / holer * 0.00001;
+            var distToHole = sqrt(holeToBallX*holeToBallX + holeToBallY*holeToBallY);
+            var gravityForce = (hole.m * ball.m / distToHole) * 0.00001;
             
-            var holegx = holeg * cos(c);
-            var holegy = holeg * sin(c);
+            var gVectorX = gravityForce * cos(c);
+            var gVectorY = gravityForce * sin(c);
             
-            var inertx = ball.inert * cos(a);
-            var inerty = ball.inert * sin(a);
+            var iVectorX = ball.inert * cos(a);
+            var iVectorY = ball.inert * sin(a);
             
-            var fx = inertx + holegx;
-            var fy = inerty + holegy;
+            var diffX = iVectorX + gVectorX;
+            var diffY = iVectorY + gVectorY;
             
-            var b = atan(fy/fx);
-            var finert = sqrt(fx*fx + fy*fy) * ball.m * 0.000000001;
+            var b = atan(diffY/diffX);
+            var inertiaForce = sqrt(diffX*diffX + diffY*diffY) * ball.m * 0.000000001;
             
-            var movex = ball.x - fx;
-            var movey = ball.y - fy;
+            var finalX = ball.x + diffX;
+            var finalY = ball.y + diffY;
+
+            console.log('           ');
+            console.log('-----------');
+            console.log('           ');
             
-            console.log('x: ' + ball.x + ' y: ' + ball.y + ' inert: ' + ball.inert + ' angle: ' + ball.ang);
+            console.log('x: ' + ball.x + ' y: ' + ball.y + ' inert: ' + ball.inert + ' angle: ' + rToD(ball.ang));
+
+            console.log('a: ' + a + ' holeToBallX: ' + holeToBallX + ' holeToBallY: ' + holeToBallY + ' c angle: ' + rToD(c));
             
-            ball.x = movex;
-            ball.y = movey;
-            ball.inert = finert;
-            ball.ang = b;
+            console.log('distToHole: ' + distToHole + ' gravityForce: ' + gravityForce + ' gVectorX: ' + gVectorX + ' gVectorY: ' + gVectorY);
             
-            $('#ball' + i).x(ball.x);
-            $('#ball' + i).y(ball.y);
+            console.log('iVectorX: ' + iVectorX + ' iVectorY: ' + iVectorY + ' diffX: ' + diffX + ' diffY: ' + diffY);
             
+            console.log('b: ' + rToD(b) + ' finalX: ' + finalX + ' inertiaForce: ' + inertiaForce);
+
+            if (fEnablePhysics) {
+                ball.x = finalX;
+                ball.y = finalY;
+                ball.inert = inertiaForce;
+                ball.ang = b;
+
+                $('#ball' + i).x(ball.x);
+                $('#ball' + i).y(ball.y);
+            }
         }
     }
 }
@@ -182,5 +200,7 @@ function mouse(action) {
         buttons['mouse'] = true;
     } else if (action === 'up') {
         buttons['mouse'] = false;
+        moveByVect();
+
     }
 }
