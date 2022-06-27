@@ -9,7 +9,7 @@ var holeHAdd = 0;
 
 var buttons = {};
 var balls = {1: {x: 100, y: 200, ang: 30, inert: 0, m: 10}};
-var holes = {1: {x: 0, y: 270, m: 1000000}};
+var holes = {1: {x: 200, y: 200, m: 1000000}};
 var isBallHold = false;
 var isHoleHold = false;
 var holdBall = 1;
@@ -165,7 +165,7 @@ function create(type, left, bottom) {
         var id = Object.keys(holes).length + 1;
         var hole = {x: left, y: bottom, m: 1000000};
         holes[id] = hole;
-        var html = `<div id="ho le${Object.keys(holes).length}" class="blackhole" style="left: ${left}px; bottom: ${bottom}px"></div>`;
+        var html = `<div id="hole${Object.keys(holes).length}" class="blackhole" style="left: ${left}px; bottom: ${bottom}px"></div>`;
     }
     field.append(html);
 }
