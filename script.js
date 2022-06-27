@@ -8,8 +8,8 @@ var ballHAdd = 0;
 var holeHAdd = 0;
 
 var buttons = {};
-var balls = {1: {x: 100, y: 200, ang: 30, inert: -7, id: 1}};
-var holes = {1: {x: 0, y: 270, g: -0.5, id: 1}};
+var balls = {1: {x: 100, y: 200, ang: 30, inert: 0, m: 10}};
+var holes = {1: {x: 0, y: 270, m: 1000000}};
 var isBallHold = false;
 var isHoleHold = false;
 var holdBall = 1;
@@ -106,43 +106,47 @@ function moveHoles() {
     }
 }
 
-function moveOneBall(ball, hole) {
-    
-    var inertiaDiffX = ball['inert'] * Math.cos(ball['ang']);
-    var inertiaDiffY = ball['inert'] * Math.sin(ball['ang']);
-
-    var xAddH = hole['x'] - ball['x'];
-    var yAddH = hole['y'] - ball['y'];
-
-    var tan = yAddH / xAddH;
-    var holeAng = Math.atan(tan);
-
-    var gravityDiffX = hole['g'] * Math.cos(holeAng);
-    var gravityDiffY = hole['g'] * Math.sin(holeAng);
-    
-    var fullDiffX = inertiaDiffX + gravityDiffX;
-    var fullDiffY = inertiaDiffY + gravityDiffY;
-    
-
-    ball['x'] = ball['x'] + fullDiffX;
-    ball['y'] = ball['y'] + fullDiffY;
-
-
-    $('#ball' + ball.id).x(ball['x']);
-    $('#ball' + ball.id).y(ball['y']);
-
-    tan = fullDiffY / fullDiffX;
-    ball['ang'] = Math.atan(tan);
-
-//    ball['inert'] = fullDiffY / Math.sin(ball['ang']);   
-    
-}
-
 function moveByVect() {
     for (var i in balls) {
         for (var j in holes) {
-            moveOneBall(balls[i], holes[j]);
-            console.log(balls[i])
+            
+            var hole = holes[j];
+            var ball = balls[i];
+            var a = ball.ang;
+            
+            var holex = hole.x - ball.x;
+            var holey = hole.y - ball.y;
+            
+            var c = atan(holey / holex);
+            
+            var holer = sqrt(holex*holex + holey*holey);
+            var holeg = hole.m * ball.m / holer * 0.00001;
+            
+            var holegx = holeg * cos(c);
+            var holegy = holeg * sin(c);
+            
+            var inertx = ball.inert * cos(a);
+            var inerty = ball.inert * sin(a);
+            
+            var fx = inertx + holegx;
+            var fy = inerty + holegy;
+            
+            var b = atan(fy/fx);
+            var finert = sqrt(fx*fx + fy*fy) * ball.m * 0.000000001;
+            
+            var movex = ball.x - fx;
+            var movey = ball.y - fy;
+            
+            console.log('x: ' + ball.x + ' y: ' + ball.y + ' inert: ' + ball.inert + ' angle: ' + ball.ang);
+            
+            ball.x = movex;
+            ball.y = movey;
+            ball.inert = finert;
+            ball.ang = b;
+            
+            $('#ball' + i).x(ball.x);
+            $('#ball' + i).y(ball.y);
+            
         }
     }
 }
@@ -153,15 +157,15 @@ function moveByVect() {
 function create(type, left, bottom) {
     if (type === 'ball') {
         var id = Object.keys(balls).length + 1;
-        var ball = {x: left, y: bottom, angle: 0, inert: 0, id: id};
+        var ball = {x: left, y: bottom, ang: 0, inert: 0, m: 10};
         balls[id] = ball;
         var html = `<div id="ball${Object.keys(balls).length}" class="ball" style="left: ${left}px; bottom: ${bottom}px"></div>`;
     }
     if (type === 'hole') {
         var id = Object.keys(holes).length + 1;
-        var hole = {x: left, y: bottom, id: id};
+        var hole = {x: left, y: bottom, m: 1000000};
         holes[id] = hole;
-        var html = `<div id="hole${Object.keys(holes).length}" class="blackhole" style="left: ${left}px; bottom: ${bottom}px"></div>`;
+        var html = `<div id="ho le${Object.keys(holes).length}" class="blackhole" style="left: ${left}px; bottom: ${bottom}px"></div>`;
     }
     field.append(html);
 }
