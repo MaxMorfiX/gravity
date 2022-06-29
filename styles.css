@@ -29,8 +29,6 @@
     /*background-color: red;*/
     z-index: 2;
     display: block;
-    user-select: none;
-    cursor: default;
     background-image: url('textures/ball.png');
     background-size: 100% 100%;
 }
