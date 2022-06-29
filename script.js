@@ -10,7 +10,7 @@ var holeHAdd = 0;
 var maxGravityForce = 30;
 
 var buttons = {};
-var balls = {1: {x: 100, y: 400, ang: 0, inert: 50, m: 10}};
+var balls = {1: {x: 100, y: 400, ang: 0, inert: 0, m: 10}};
 var holes = {1: {x: 200, y: 300, m: 1000000}};
 var isBallHold = false;
 var isHoleHold = false;
@@ -116,6 +116,11 @@ function moveHoles() {
 
 function moveByVect() {
     for (var i in balls) {
+        if(isBallHold) {
+            if(holdBall === i) {
+                continue;
+            }
+        }
         
         var ball = balls[i];
         var finalX;
