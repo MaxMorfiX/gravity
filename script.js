@@ -1,5 +1,5 @@
 const SEP = '_';
-const fEnablePhysics = true;
+const enablePhysics = true;
 var field = $('#field');
 var gameInterval = 10;
 var mouseTrackInterval = 10;
@@ -110,10 +110,14 @@ function moveHoles() {
 
 function moveByVect() {
     for (var i in balls) {
+        
+        var ball = balls[i];
+        var finalX;
+        var finalY;
+        
         for (var j in holes) {
             
             var hole = holes[j];
-            var ball = balls[i];
             var a = ball.ang;
             
             var holeToBallX = hole.x - ball.x;
@@ -144,18 +148,21 @@ function moveByVect() {
             var b = atan(diffY/diffX);
             var inertiaForce = sqrt(diffX*diffX + diffY*diffY) * ball.m * 0.000000001;
             
-            var finalX = ball.x + diffX;
-            var finalY = ball.y + diffY;
+            finalX = ball.x + diffX;
+            finalY = ball.y + diffY;
 
-            if (fEnablePhysics) {
-                ball.x = finalX;
-                ball.y = finalY;
-                ball.inert = inertiaForce;
-                ball.ang = b;
-
-                $('#ball' + i).x(ball.x);
-                $('#ball' + i).y(ball.y);
+            ball.x = finalX;
+            ball.y = finalY;
+            
+            ball.inert = inertiaForce;
+            ball.ang = b;
+            
             }
+            
+        if (enablePhysics) {
+
+            $('#ball' + i).x(ball.x);
+            $('#ball' + i).y(ball.y);
         }
     }
 }
