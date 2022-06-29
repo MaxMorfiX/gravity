@@ -41,13 +41,13 @@ function moveByMouse() {
         return;
     }
     
-    if (!isHoleHold) {
-        moveBalls();
-        if (!isBallHold) {
-            moveHoles();
-        }
-    } else if (!isBallHold) {
+    if (!isBallHold) {
         moveHoles();
+        if (!isHoleHold) {
+            moveBalls();
+        }
+    } else if (!isHoleHold) {
+        moveBalls();
     }
 }
 
