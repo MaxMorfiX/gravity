@@ -10,8 +10,8 @@ var holeHAdd = 0;
 var maxGravityForce = 30;
 
 var buttons = {};
-var balls = {1: {x: 100, y: 200, ang: dToR(30), inert: 0, m: 10}};
-var holes = {1: {x: 200, y: 200, m: 1000000}};
+var balls = {1: {x: 100, y: 400, ang: 0, inert: 50, m: 10}};
+var holes = {1: {x: 200, y: 300, m: 1000000}};
 var isBallHold = false;
 var isHoleHold = false;
 var holdBall = 1;
@@ -19,8 +19,14 @@ var holdHole = 1;
 var mx = 0;
 var my = 0;
 
-cycle();
-trackMouse();
+start();
+
+function start() {
+    fitToSize();
+    trackMouse();
+    cycle();
+}
+
 
 function trackMouse() {
     moveByMouse();
@@ -176,14 +182,17 @@ function create(type, left, bottom) {
         var ball = {x: left, y: bottom, ang: 0, inert: 0, m: 10};
         balls[id] = ball;
         var html = `<div id="ball${Object.keys(balls).length}" class="ball" style="left: ${left}px; bottom: ${bottom}px"></div>`;
+        field.append(html);
+        ball[id].y = $('#ball' + id).y();
     }
     if (type === 'hole') {
         var id = Object.keys(holes).length + 1;
         var hole = {x: left, y: bottom, m: 1000000};
         holes[id] = hole;
         var html = `<div id="hole${Object.keys(holes).length}" class="blackhole" style="left: ${left}px; bottom: ${bottom}px"></div>`;
+        field.append(html);
+        holes[id].y = $('#hole' + id).y();
     }
-    field.append(html);
 }
 
 
@@ -201,4 +210,14 @@ function mouse(action) {
         moveByVect();
 
     }
+}
+function fitToSize() {
+    field.height(window.innerHeight);
+    field.width(window.innerWidth);
+    
+    balls[1].x = $('#ball1').x();
+    holes[1].x = $('#hole1').x();
+    
+    balls[1].y = $('#ball1').y();
+    holes[1].y = $('#hole1').y();
 }

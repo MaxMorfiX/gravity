@@ -31,8 +31,6 @@
     display: block;
     user-select: none;
     cursor: default;
-    left: 100px;
-    bottom: 200px;
     background-image: url('textures/ball.png');
     background-size: 100% 100%;
 }
