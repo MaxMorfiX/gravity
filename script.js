@@ -7,6 +7,7 @@ var ballSize = $('.ball').width();
 var holeSize = $('.blackhole').width();
 var ballHAdd = 0;
 var holeHAdd = 0;
+var maxGravityForce = 30;
 
 var buttons = {};
 var balls = {1: {x: 100, y: 200, ang: dToR(30), inert: 0, m: 10}};
@@ -127,6 +128,10 @@ function moveByVect() {
             var distToHole = sqrt(holeToBallX*holeToBallX + holeToBallY*holeToBallY);
             var gravityForce = (hole.m * ball.m / distToHole) * 0.00001;
             
+            if(gravityForce > maxGravityForce) {
+                gravityForce = maxGravityForce;
+            }
+            
             var gVectorX = gravityForce * cos(c);
             var gVectorY = gravityForce * sin(c);
             
@@ -141,20 +146,6 @@ function moveByVect() {
             
             var finalX = ball.x + diffX;
             var finalY = ball.y + diffY;
-
-            console.log('           ');
-            console.log('-----------');
-            console.log('           ');
-            
-            console.log('x: ' + ball.x + ' y: ' + ball.y + ' inert: ' + ball.inert + ' angle: ' + rToD(ball.ang));
-
-            console.log('a: ' + a + ' holeToBallX: ' + holeToBallX + ' holeToBallY: ' + holeToBallY + ' c angle: ' + rToD(c));
-            
-            console.log('distToHole: ' + distToHole + ' gravityForce: ' + gravityForce + ' gVectorX: ' + gVectorX + ' gVectorY: ' + gVectorY);
-            
-            console.log('iVectorX: ' + iVectorX + ' iVectorY: ' + iVectorY + ' diffX: ' + diffX + ' diffY: ' + diffY);
-            
-            console.log('b: ' + rToD(b) + ' finalX: ' + finalX + ' inertiaForce: ' + inertiaForce);
 
             if (fEnablePhysics) {
                 ball.x = finalX;
