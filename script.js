@@ -8,6 +8,8 @@ var holeSize = $('.blackhole').width();
 var ballHAdd = 0;
 var holeHAdd = 0;
 var maxGravityForce = 30;
+var ballHoldRecentPos = {1: {x: 100, y: 400}};
+var finertMult = 0.0000001;
 
 var buttons = {};
 var balls = {1: {x: 100, y: 400, ang: 0, inert: 0, m: 10}};
@@ -42,6 +44,11 @@ function cycle() {
 
 function moveByMouse() {
     if (!buttons['mouse']) {
+        
+        if(isBallHold) {
+            makeMouseInert();
+        }
+        
         isBallHold = false;
         isHoleHold = false;
         return;
@@ -55,6 +62,29 @@ function moveByMouse() {
     } else if (!isHoleHold) {
         moveBalls();
     }
+}
+
+function makeMouseInert() {
+    var diffX = ballHoldRecentPos[1].x - ballHoldRecentPos[2].x;
+    var diffY = ballHoldRecentPos[1].y - ballHoldRecentPos[2].y;
+    
+    if(diffX === 0 && diffY === 0) {
+        return;
+    }
+    
+    var ang = atan(diffY/diffX);
+    var inert = sqrt(diffX*diffX + diffY*diffY) * balls[holdBall].m;
+    
+    if(inert > maxGravityForce) {
+        inert = maxGravityForce;
+    }
+    
+    if (diffX < 0) {
+        ang += Math.PI;
+    }
+    
+    balls[holdBall].ang = ang;
+    balls[holdBall].inert = inert;
 }
 
 function mouseBallCol() {
@@ -84,6 +114,8 @@ function moveBalls() {
         balls[holdBall]['y'] = my - ballSize / 2;
         $('#ball' + holdBall).x(balls[holdBall]['x']);
         $('#ball' + holdBall).y(balls[holdBall]['y']);
+        ballHoldRecentPos = {1: {x: balls[holdBall]['x'], y: balls[holdBall]['y']}, 2: ballHoldRecentPos[1]};
+        console.log(JSON.stringify(ballHoldRecentPos));
     }
 }
 
@@ -135,7 +167,7 @@ function moveByVect() {
             var holeToBallY = hole.y - ball.y;
             
             var c = atan(holeToBallY / holeToBallX);
-
+            
             if (holeToBallX < 0) {
                 c = c + Math.PI;
             }
@@ -157,7 +189,7 @@ function moveByVect() {
             var diffY = iVectorY + gVectorY;
             
             var b = atan(diffY/diffX);
-            var inertiaForce = sqrt(diffX*diffX + diffY*diffY) * ball.m * 0.000000001;
+            var inertiaForce = sqrt(diffX*diffX + diffY*diffY) * ball.m * finertMult;
             
             finalX = ball.x + diffX;
             finalY = ball.y + diffY;
