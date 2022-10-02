@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="../cdn_modules/jquery@3.6.0/jquery.min.js" ></script>
+    <title>gravity</title>
+    <link rel="stylesheet" type="text/css" href="styles.css"/>
+</head>
+
+<body onmousedown="mouseClick('down')" onmouseup="mouseClick('up')" style="margin: 0;">
+    
+    <div id='field' class='field'>
+        <canvas id="canvas" class="canvas"></canvas>
+        <div id="addBallButton" class="aOB" style="top: 2px;" onclick="balls.push(new Ball())">add ball</div>
+        <div id="addRandBallButton" class="aOB" style="top: 24px; width: 150px;" onclick="balls.push(new Ball(vector2(Math.random()*fieldW, Math.random()*fieldH), {color: Math.random()*10000}))">add random ball</div>
+    </div>
+    
+    <script src="JQbottom.js"></script>
+    <script src="game.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
