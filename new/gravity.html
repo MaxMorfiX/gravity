@@ -11,8 +11,8 @@
     
     <div id='field' class='field'>
         <canvas id="canvas" class="canvas"></canvas>
-        <div id="addBallButton" class="aOB" style="top: 2px;" onclick="balls.push(new Ball())">add ball</div>
-        <div id="addRandBallButton" class="aOB" style="top: 24px; width: 150px;" onclick="balls.push(new Ball(vector2(Math.random()*fieldW, Math.random()*fieldH), {color: Math.random()*10000}))">add random ball</div>
+        <div id="addBallButton" class="aOB" style="top: 2px;" onclick="addBall();">add ball</div>
+        <div id="addRandBallButton" class="aOB" style="top: 24px; width: 150px;" onclick="addBall('random');">add random ball</div>
     </div>
     
     <script src="JQbottom.js"></script>

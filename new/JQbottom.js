@@ -185,6 +185,8 @@ function mouseClick(action) {
 onmousemove = function (e) {
     mx = e.x;
     my = fieldH - e.y;
+    
+//    console.log(mx + ' ' + my);
 };
 
 document.addEventListener('keydown', KeyDown);

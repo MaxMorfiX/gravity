@@ -12,6 +12,7 @@ const finalVelocityCoficient = 0.2;
 let ballHitboxAdd = 0;
 let balls = [];
 let isBallHoldingNow = false;
+let camera = {x: 0, y: 0, moveSpeed: 5};
 
 class Ball {
     
@@ -27,8 +28,10 @@ class Ball {
     radius = 10;
     isHoldedByMouse = false;
     isMouseCollided = false;
-    enablePhysics = true;
+    enablePhysics = false;
     displayPos = vector2();
+    
+    color = "white";
     drawDeco = {
         color: "black",
         borderColor: "black",
@@ -77,8 +80,10 @@ class Ball {
         ctx.fillStyle = this.color;
         ctx.strokeStyle = this.borderColor;
         
+        let displayPos = vector2(this.pos.x - camera.x, fieldH - this.pos.y + camera.y);
+        
         ctx.beginPath();
-        ctx.arc(this.pos.x, fieldH - this.pos.y, this.radius, 0, 2 * Math.PI);
+        ctx.arc(displayPos.x, displayPos.y, this.radius, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -87,8 +92,8 @@ class Ball {
     }
     
     checkMouseCollision() {
-        let left = this.pos.x - this.radius;
-        let bottom = this.pos.y - this.radius;
+        let left = this.pos.x - this.radius - camera.x;
+        let bottom = this.pos.y - this.radius - camera.y;
         let right = left + 2 * ballHitboxAdd + this.radius*2;
         let top = bottom + 2 * ballHitboxAdd + this.radius*2;
 
@@ -111,7 +116,7 @@ class Ball {
     calcMoving() {
         if(this.isMouseCollided) {
             if(buttons.mouse) {
-                this.pos = vector2(mx, my);
+                this.pos = vector2(mx + camera.x, my + camera.y);
 //                this.color = "blue";
                 this.isHoldedByMouse = true;
             } else {
@@ -163,14 +168,24 @@ function startGame() {
     balls.push(new Ball(vector2(250, 300), {color: "purple"}));
     balls.push(new Ball(vector2(300, 210), {mass: 100000, color: "yellow"}));
 
-    setInterval(update, 70);
+    setInterval(update, 16);
+    setInterval(moveCamera, 16);
+    setInterval(checkMouseCollision, 16);
 }
 
-function update() {
-    checkMouseCollision();
-    
+function update() {   
     moveBalls();
     drawBalls();
+}
+function moveCamera() {
+    if(buttons[38])
+        camera.y += camera.moveSpeed;
+    if(buttons[40])
+        camera.y -= camera.moveSpeed;
+    if(buttons[39])
+        camera.x += camera.moveSpeed;
+    if(buttons[37])
+        camera.x -= camera.moveSpeed;
 }
 
 function drawBalls(drawBalls = balls) {
@@ -217,4 +232,17 @@ function fitToSize() {
     $("#canvas, #field").width(fieldW).height(fieldH);
     ctx.canvas.width = fieldW;
     ctx.canvas.height = fieldH;
+}
+
+function addBall(pos, params = {}) {
+    if(pos === "random" || pos === "rand") {
+        balls.push(new Ball(
+            vector2(Math.random()*fieldW + camera.x, Math.random()*fieldH + camera.y),
+            params
+        ));
+    } else if(pos) {
+        balls.push(new Ball(vector2(pos.x + camera.x, pos.y + camera.y), params));
+    } else {
+        balls.push(new Ball(vector2(camera.x + fieldW/2, camera.y + fieldH/2), params));
+    }
 }
