@@ -6,8 +6,13 @@
 /* global fieldH*/
 /* global fieldW*/
 
-const attractCoficient = 0.01;
+const attractCoficient = 0.001;
 const finalVelocityCoficient = 0.2;
+const globalG = 0.01;
+let deltaT = 16;
+
+let lastmx = 0;
+let lastmy = 0;
 
 let ballHitboxAdd = 0;
 let balls = [];
@@ -20,11 +25,11 @@ class Ball {
     
     attractor = {
         pos: vector2(),
-        m: 10000
+        m: 10
     }
     attractee = {
         pos: vector2(),
-        m: 10000
+        m: 10
     }
     
     velocity = vector2();
@@ -59,8 +64,8 @@ class Ball {
             this.attractor.pos = params.pos;
         }
         if(typeof params.mass !== 'undefined') {
-            this.attractor.mass = params.mass;
-            this.attractee.mass = params.mass;
+            this.attractor.m = params.mass;
+            this.attractee.m = params.mass;
         } 
         if(typeof params.enablePhysics !== 'undefined')
             this.enablePhysics = params.enablePhysics;
@@ -108,9 +113,18 @@ class Ball {
         
         this.velocity.x += forceAdd.x;
         this.velocity.y += forceAdd.y;
+        
+        let linePos1 = vector2(this.attractee.pos.x, this.attractee.pos.y-300);
+        let linePos2 = vector2(this.attractee.pos.x + this.velocity.x*0.002, this.attractee.pos.y-300 + this.velocity.y*0.002);
+        drawLine(linePos1, linePos2, {color: "black"});
     }
     
     calcMoving() {
+        if(this.isHoldedByMouse && !buttons.mouse) {
+            let mouseInert = calcMouseMove();
+            this.velocity = (vector2(mouseInert.x*1000, mouseInert.y*1000));
+        }
+        
         if(this.isMouseCollided) {
             if(buttons.mouse) {
                 this.attractee.pos = vector2(mx + camera.x, my + camera.y);
@@ -121,11 +135,12 @@ class Ball {
 //                this.color = "darkred";
             }
         }
+        
         if(this.enablePhysics && !this.isHoldedByMouse) {
             this.calcAttractionToAll();
             
-            this.attractee.pos.x += this.velocity.x;
-            this.attractee.pos.y += this.velocity.y;
+            this.attractee.pos.x += this.velocity.x*deltaT/100000;
+            this.attractee.pos.y += this.velocity.y*deltaT/100000;
         }
     }
     calcAttractionToAll() {
@@ -156,7 +171,7 @@ class Ball {
         diff.magnitude = Math.sqrt(diff.x*diff.x + diff.y*diff.y);
         diff.ang = Math.atan(diff.y/diff.x);
         
-        let attractLenght = attractor.m*diff.magnitude;
+        let attractLenght = globalG*(diff.magnitude)*attractor.m;
         
         if(attractLenght > 9999)
             attractLenght = 9999;
@@ -171,34 +186,37 @@ class Ball {
         };
         
         let linePos1 = vector2(this.attractee.pos.x, this.attractee.pos.y-300);
-        let linePos2 = vector2(this.attractee.pos.x + attractVector.x*0.005, this.attractee.pos.y-300 + attractVector.y*0.005);
-        drawLine(linePos1, linePos2, {color: "black"});
+        let linePos2 = vector2(this.attractee.pos.x + attractVector.x*0.01, this.attractee.pos.y-300 + attractVector.y*0.01);
+        drawLine(linePos1, linePos2, {color: "green"});
         
         return attractVector;
     }
-    
 }
 
 function startGame() {
     
     fitToSize();
     
-//    balls.push(new Ball(vector2(430, 200), {color: "red"}));
-//    balls.push(new Ball(vector2(330, 300), {color: "green"}));
-//    balls.push(new Ball(vector2(400, 300), {color: "blue"}));
+    balls.push(new Ball(vector2(430, 200), {color: "red"}));
+    balls.push(new Ball(vector2(330, 300), {color: "green"}));
+    balls.push(new Ball(vector2(400, 300), {color: "blue"}));
     balls.push(new Ball(vector2(250, 300), {color: "purple"}));
-    balls.push(new Ball(vector2(300, 210), {mass: 100000, color: "yellow"}));
+    balls.push(new Ball(vector2(300, 210), {mass: 10000, color: "yellow"}));
 
-    setInterval(moveCamera, 16);
-    setInterval(update, 16);
-    setInterval(checkMouseCollision, 16);
+    setInterval(moveCamera, deltaT);
+    setInterval(update, deltaT);
+    setInterval(checkMouseCollision, deltaT);
 }
 
-function update() {   
+function update() {
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     moveBalls();
     drawBalls();
+    
+    lastmx = mx;
+    lastmy = my;
 }
 function moveCamera() {
     if(buttons[38])
@@ -224,7 +242,7 @@ function moveCamera() {
     }
     
 //    camera.x = balls[0].attractee.pos.x - ctx.canvas.width/2;
-//    camera.y = balls[0].attractee.pos.y;
+//    camera.y = balls[0].attractee.pos.y - ctx.canvas.height/2;
 }
 
 function drawBalls(drawBalls = balls) {
@@ -284,6 +302,14 @@ function addBall(pos, params = {}) {
     } else {
         balls.push(new Ball(vector2(camera.x + fieldW/2, camera.y + fieldH/2), params));
     }
+}
+function calcMouseMove() {
+    let ret = {
+        x: mx - lastmx,
+        y: my - lastmy
+    };
+    
+    return ret;
 }
 
 function drawLine(pos1, pos2, parameters = {}) {

@@ -6,7 +6,9 @@ var fieldH = $('#field').height(),
     buttons = {},
     mouse,
     mx,
-    my;
+    my,
+    resentmxpos,
+    resentmypos;
 
 function fitToSizeJQbottom(fieldFinder) {
     fieldH = $(fieldFinder).height();
@@ -183,6 +185,9 @@ function mouseClick(action) {
     }
 }
 onmousemove = function (e) {
+    resentmxpos = mx;
+    resentmypos = mx;
+    
     mx = e.x;
     my = fieldH - e.y;
     
