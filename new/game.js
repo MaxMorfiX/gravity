@@ -116,7 +116,7 @@ class Ball {
         
         let linePos1 = vector2(this.attractee.pos.x, this.attractee.pos.y-300);
         let linePos2 = vector2(this.attractee.pos.x + this.velocity.x*0.002, this.attractee.pos.y-300 + this.velocity.y*0.002);
-        drawLine(linePos1, linePos2, {color: "black"});
+//        drawLine(linePos1, linePos2, {color: "black"});
     }
     
     calcMoving() {
@@ -187,7 +187,7 @@ class Ball {
         
         let linePos1 = vector2(this.attractee.pos.x, this.attractee.pos.y-300);
         let linePos2 = vector2(this.attractee.pos.x + attractVector.x*0.01, this.attractee.pos.y-300 + attractVector.y*0.01);
-        drawLine(linePos1, linePos2, {color: "green"});
+//        drawLine(linePos1, linePos2, {color: "green"});
         
         return attractVector;
     }
