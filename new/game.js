@@ -32,9 +32,10 @@ class Ball {
     radius = 10;
     isHoldedByMouse = false;
     isMouseCollided = false;
-    enablePhysics = false;
+    enablePhysics = true;
     
     color = "white";
+    borderColor = "black";
     id = 0;
     
     constructor(pos = vector2(fieldW/2, fieldH/2), parameters = {}) {
@@ -153,28 +154,25 @@ class Ball {
         let diff = vector2(attractor.pos.x - attractee.pos.x, attractor.pos.y - attractee.pos.y);
         
         diff.magnitude = Math.sqrt(diff.x*diff.x + diff.y*diff.y);
-        diff.ang = Math.atan(diff.x/diff.y);
+        diff.ang = Math.atan(diff.y/diff.x);
         
         let attractLenght = attractor.m*diff.magnitude;
         
         if(attractLenght > 9999)
             attractLenght = 9999;
         
+        if(diff.x < 0) {
+            diff.ang += d2R(180);
+        }
+        
         let attractVector = {
             x: cos(diff.ang)*attractLenght,
             y: sin(diff.ang)*attractLenght
         };
         
-        if(diff.x > 0) {
-            attractVector.x = Math.abs(attractVector.x);
-        } else {
-            attractVector.x = -Math.abs(attractVector.x);
-        }
-        if(diff.y > 0) {
-            attractVector.y = Math.abs(attractVector.y);
-        } else {
-            attractVector.y = -Math.abs(attractVector.y);
-        }
+        let linePos1 = vector2(this.attractee.pos.x, this.attractee.pos.y-300);
+        let linePos2 = vector2(this.attractee.pos.x + attractVector.x*0.005, this.attractee.pos.y-300 + attractVector.y*0.005);
+        drawLine(linePos1, linePos2, {color: "black"});
         
         return attractVector;
     }
@@ -185,11 +183,11 @@ function startGame() {
     
     fitToSize();
     
-    balls.push(new Ball(vector2(430, 200), {color: "red", enablePhysics: true, mass: 10000}));
-    balls.push(new Ball(vector2(330, 300), {color: "green"}));
+//    balls.push(new Ball(vector2(430, 200), {color: "red"}));
+//    balls.push(new Ball(vector2(330, 300), {color: "green"}));
 //    balls.push(new Ball(vector2(400, 300), {color: "blue"}));
-//    balls.push(new Ball(vector2(250, 300), {color: "purple"}));
-//    balls.push(new Ball(vector2(300, 210), {mass: 100000, color: "yellow"}));
+    balls.push(new Ball(vector2(250, 300), {color: "purple"}));
+    balls.push(new Ball(vector2(300, 210), {mass: 100000, color: "yellow"}));
 
     setInterval(moveCamera, 16);
     setInterval(update, 16);
@@ -197,6 +195,8 @@ function startGame() {
 }
 
 function update() {   
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     moveBalls();
     drawBalls();
 }
@@ -228,9 +228,6 @@ function moveCamera() {
 }
 
 function drawBalls(drawBalls = balls) {
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
     for(let i in drawBalls) {
         let ball = drawBalls[i];
         
@@ -287,4 +284,26 @@ function addBall(pos, params = {}) {
     } else {
         balls.push(new Ball(vector2(camera.x + fieldW/2, camera.y + fieldH/2), params));
     }
+}
+
+function drawLine(pos1, pos2, parameters = {}) {
+    let params = {
+        width: 3,
+        color: 'green'
+    };
+    if(parameters.width)
+        params.width = parameters.width;
+    if(parameters.color)
+        params.color = parameters.color;
+    
+    ctx.beginPath();
+    
+    ctx.strokeStyle = params.color;
+    ctx.lineWidth = params.width;
+    
+    ctx.moveTo(pos1.x - camera.x, fieldH/2 - pos1.y + camera.y);
+    ctx.lineTo(pos2.x - camera.x, fieldH/2 - pos2.y + camera.y);
+    
+    ctx.stroke();
+    ctx.closePath();
 }
