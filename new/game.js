@@ -1,5 +1,7 @@
 /* global ctx*/
+/* global keyPressFunctions*/
 /* global camera*/
+/* global lastHoldedBall*/
 /* global buttons*/
 /* global mx*/
 /* global my*/
@@ -14,8 +16,9 @@ let deltaT = 16;
 let world = new World();
 let activateConsoleUpdate = true;
 
-let lastmx = 0;
-let lastmy = 0;
+let worldM = vector2();
+let lastWorldM = worldM;
+let lastButtons = {};
 
 let balls = [];
 let isBallHoldingNow = false;
@@ -40,11 +43,13 @@ function update() {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    worldM = canvas2worldPoint(vector2(mx, my));
+    
     moveBalls();
     drawBalls();
     
-    lastmx = mx;
-    lastmy = my;
+    lastWorldM = worldM;
+    lastButtons = buttons;
 }
 
 function drawBalls(drawBalls = balls) {
@@ -121,8 +126,8 @@ function addBall(params = {}) {
 }
 function calcMouseMove() {
     let ret = {
-        x: mx - lastmx,
-        y: my - lastmy
+        x: worldM.x - lastWorldM.x,
+        y: worldM.y - lastWorldM.y
     };
     
     return ret;
@@ -160,3 +165,16 @@ function consoleUpdate() {
     
 //    addBall();
 }
+
+function toggleFollowCamera() {
+    if(camera.followBall === false) {
+        camera.startFollowBall(lastHoldedBall);
+    } else {
+        camera.unfollow();
+    }
+}
+
+
+keyPressFunctions["102"] = function() {
+    toggleFollowCamera();
+};

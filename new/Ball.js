@@ -2,8 +2,8 @@
 /* global globalG*/
 /* global camera*/
 /* global buttons*/
-/* global mx*/
-/* global my*/
+/* global worldM*/
+/* global lastWorldM*/
 /* global canvas*/
 /* global fieldH*/
 /* global fieldW*/
@@ -11,6 +11,7 @@
 /* global balls*/
 
 let ballHitboxAdd = 0;
+let lastHoldedBall;
 
 class Ball {
     
@@ -36,6 +37,13 @@ class Ball {
     radius = 10;
     borderWidth = this.radius/10;
     id = 0;
+    
+    drawVecSettings = {
+        drawAttractVectorFromAttractee: true,
+        drawAttractVectorFromAttractor: false,
+        drawVelocity: true,
+        drawFinalForceVector: true
+    };
     
     constructor(pos = vector2(fieldW/2, fieldH/2), parameters = {}) {
         this.attractee.pos = pos;
@@ -112,27 +120,31 @@ class Ball {
             x: this.attractee.pos.x,
             y: this.attractee.pos.y
         };
-        let linePos2 = {
-            x: this.attractee.pos.x + forceAdd.x*0.003,
-            y: this.attractee.pos.y + forceAdd.y*0.003
-        };
-        world.drawLine(linePos1, linePos2, {color: "blue"});
         
-        linePos2 = {
-            x: this.attractee.pos.x + this.velocity.x*0.003,
-            y: this.attractee.pos.y + this.velocity.y*0.003
-        };
-        world.drawLine(linePos1, linePos2, {color: "black"});
+        if(this.drawVecSettings.drawFinalForceVector) {
+            let linePos2 = {
+                x: this.attractee.pos.x + forceAdd.x*0.003,
+                y: this.attractee.pos.y + forceAdd.y*0.003
+            };
+            world.drawLine(linePos1, linePos2, {color: "blue"});
+        }
+        
+        if(this.drawVecSettings.drawVelocity) {
+            let linePos2 = {
+                x: this.attractee.pos.x + this.velocity.x*0.003,
+                y: this.attractee.pos.y + this.velocity.y*0.003
+            };
+            world.drawLine(linePos1, linePos2, {color: "black"});
+        }
     }
     
     calcMoving() {
         if(this.isHoldedByMouse && !buttons.mouse) {
             let mouseMove = calcMouseMove();
             
-            let mouseInert = canvas2worldPoint(mouseMove);
             this.velocity = {
-                x: (mouseInert.x - camera.x)*1000,
-                y: (mouseInert.y - camera.y)*1000
+                x: (mouseMove.x - camera.x)*1000,
+                y: (mouseMove.y - camera.y)*1000
             };
             
             this.isHoldedByMouse = false;
@@ -140,9 +152,10 @@ class Ball {
         
         if(this.isMouseCollided) {
             if(buttons.mouse) {
-                this.attractee.pos = canvas2worldPoint(vector2(mx, my));
+                this.attractee.pos = worldM;
 //                this.color = "blue";
                 this.isHoldedByMouse = true;
+                lastHoldedBall = this;
             } else {
 //                this.color = "darkred";
             }
@@ -196,27 +209,29 @@ class Ball {
             x: cos(diff.ang)*attractLenght,
             y: sin(diff.ang)*attractLenght
         };
-        
-        let linePos1 = {
-            x: attractee.pos.x,
-            y: attractee.pos.y
-        };
-        let linePos2 = {
-            x: attractee.pos.x + attractVector.x*0.01,
-            y: attractee.pos.y + attractVector.y*0.01
-        };
-        world.drawLine(linePos1, linePos2, {color: "green"});
-        
-        linePos1 = {
-            x: attractor.pos.x,
-            y: attractor.pos.y
-        };
-        linePos2 = {
-            x: attractor.pos.x - attractVector.x*0.004,
-            y: attractor.pos.y - attractVector.y*0.004
-        };
-        world.drawLine(linePos1, linePos2, {color: "red"});
-        
+        if(this.drawVecSettings.drawAttractVectorFromAttractee) {
+            let linePos1 = {
+                x: attractee.pos.x,
+                y: attractee.pos.y
+            };
+            let linePos2 = {
+                x: attractee.pos.x + attractVector.x*0.01,
+                y: attractee.pos.y + attractVector.y*0.01
+            };
+            world.drawLine(linePos1, linePos2, {color: "green"});
+        }
+        if(this.drawVecSettings.drawAttractVectorFromAttractor) {
+            let linePos1 = {
+                x: attractor.pos.x,
+                y: attractor.pos.y
+            };
+            let linePos2 = {
+                x: attractor.pos.x - attractVector.x*0.004,
+                y: attractor.pos.y - attractVector.y*0.004
+            };
+            world.drawLine(linePos1, linePos2, {color: "red"});
+        }
+
         return attractVector;
     }
     

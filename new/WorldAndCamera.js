@@ -1,4 +1,6 @@
 /* global ctx*/
+/* global balls*/
+/* global holdBall*/
 /* global camera*/
 /* global buttons*/
 /* global mx*/
@@ -50,9 +52,16 @@ class World {
 function world2canvasPoint(pos, dontInvertY) {
     
     let canvasPoint = {
-        x: (pos.x - camera.x)/camera.zoom,
-        y: (pos.y - camera.y)/camera.zoom
+        x: pos.x - camera.offset.x,
+        y: pos.y - camera.offset.y
     };
+    if(camera.followBall !== false) {
+        canvasPoint.x -= camera.followBall.attractee.pos.x;
+        canvasPoint.y -= camera.followBall.attractee.pos.y;
+    }
+    
+    canvasPoint.x /= camera.zoom;
+    canvasPoint.y /= camera.zoom;
     
     if(!(dontInvertY === true)) {
         canvasPoint.y = fieldH - canvasPoint.y;
@@ -60,27 +69,38 @@ function world2canvasPoint(pos, dontInvertY) {
     
     return canvasPoint;
 }
+function canvas2worldPoint(pos) {
+    
+    let worldPoint = {
+        x: pos.x*camera.zoom + camera.offset.x,
+        y: pos.y*camera.zoom + camera.offset.y
+    };
+    
+    if(camera.followBall !== false) {
+        worldPoint.x += camera.followBall.attractee.pos.x;
+        worldPoint.y += camera.followBall.attractee.pos.y;
+    }    
+    
+    return worldPoint;
+}
+
 function world2canvasLenght(lenght) {
     let canvasLenght = lenght/camera.zoom;
     
     return canvasLenght;
 }
-function canvas2worldPoint(pos) {
+function canvas2worldLenght(lenght) {
+    let worldLenght = lenght*camera.zoom;
     
-    let worldPoint = {
-        x: pos.x*camera.zoom + camera.x,
-        y: pos.y*camera.zoom + camera.y
-    };
-    
-    return worldPoint;
+    return worldLenght;
 }
 
 class Camera {
     
     zoom;
+    followBall = false;
     moveSpeed;
-    x;
-    y;
+    offset = vector2();
     
     constructor(params = {}) {
         this.zoom = params.zoom || 1;
@@ -90,23 +110,44 @@ class Camera {
     }
     
     calcPosAndZoom() {
-        if(buttons[38])
-            this.y += this.moveSpeed*this.zoom;
-        if(buttons[40])
-            this.y -= this.moveSpeed*this.zoom;
-        if(buttons[39])
-            this.x += this.moveSpeed*this.zoom;
-        if(buttons[37])
-            this.x -= this.moveSpeed*this.zoom;
+        this.calcMove();
 
         if(buttons[190]) {
             this.zoom += 0.05*this.zoom;
         }
         if(buttons[191]) {
-            this.zoom -= 0.05*this.zoom;[]
+            this.zoom -= 0.05*this.zoom;
         }
+    }
+    calcMove() {
+        if(buttons[38])
+            this.offset.y += this.moveSpeed*this.zoom;
+        if(buttons[40])
+            this.offset.y -= this.moveSpeed*this.zoom;
+        if(buttons[39])
+            this.offset.x += this.moveSpeed*this.zoom;
+        if(buttons[37])
+            this.offset.x -= this.moveSpeed*this.zoom;
+    }
+    
+    startFollowBall(followBall) {
+        this.followBall = followBall;
+        this.offset = {
+            x: -canvas2worldLenght(fieldW/2),
+            y: -canvas2worldLenght(fieldH/2)
+        };
+    }
+    unfollow() {
+        
+        this.offset.x += this.followBall.attractee.pos.x;
+        this.offset.y += this.followBall.attractee.pos.y;
+        
+        this.followBall = false;
     }
 }
 
 
 let camera = new Camera();
+
+
+//camera.startFollowBall(balls[3]);             

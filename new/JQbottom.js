@@ -8,7 +8,8 @@ var fieldH = $('#field').height(),
     mx,
     my,
     resentmxpos,
-    resentmypos;
+    resentmypos,
+    keyPressFunctions = {};
 
 function fitToSizeJQbottom(fieldFinder) {
     fieldH = $(fieldFinder).height();
@@ -196,6 +197,7 @@ onmousemove = function (e) {
 
 document.addEventListener('keydown', KeyDown);
 document.addEventListener('keyup', KeyUp);
+document.addEventListener('keypress', KeyPress);
 
 function KeyDown(e) {
     buttons[e.which] = true;
@@ -203,6 +205,11 @@ function KeyDown(e) {
 function KeyUp(e) {
     if (buttons[e.which]) {
         buttons[e.which] = false;
+    }
+}
+function KeyPress(e) {
+    if(keyPressFunctions[e.which]) {
+        keyPressFunctions[e.which]();
     }
 }
 
