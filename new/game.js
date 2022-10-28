@@ -9,28 +9,31 @@
 /* global fieldH*/
 /* global fieldW*/
 
-const attractCoficient = 0.001;
-const finalVelocityCoficient = 0.2;
-const globalG = 10;
+const attractCofficient = 0.001;
+const finalVelocityCofficient = 0.2;
+const globalG = 6.67384;
 let deltaT = 16;
 let world = new World();
 let activateConsoleUpdate = true;
 
-let worldM = vector2();
-let lastWorldM = worldM;
+let worldMPos = vector2();
+let lastWorldM = worldMPos;
 let lastButtons = {};
 
 let balls = [];
 let isBallHoldingNow = false;
 
+
+let showGuideText = true;
+
 function startGame() {
     
     fitToSize();
     
-    balls.push(new Ball(vector2(300, 210), {mass: 1000000, color: "yellow", radius: 20}));
-    balls.push(new Ball(vector2(430, 200), {mass: 3, color: "red"}));
+    balls.push(new Ball(vector2(300, 210), {mass: 10000000, color: "yellow", radius: 20}));
+    balls.push(new Ball(vector2(430, 200), {mass: 30, color: "red"}));
     balls.push(new Ball(vector2(330, 300), {mass: 30, color: "green"}));
-    balls.push(new Ball(vector2(400, 300), {mass: 10, color: "blue"}));
+    balls.push(new Ball(vector2(400, 300), {mass: 1000, color: "blue"}));
     balls.push(new Ball(vector2(250, 300), {mass: 20, color: "purple"}));
 
     setInterval(calcCameraPosAndZoom, deltaT);
@@ -43,12 +46,16 @@ function update() {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    worldM = canvas2worldPoint(vector2(mx, my));
+    worldMPos = canvas2worldPoint(vector2(mx, my));
+    
+    if(showGuideText) {
+        drawGuideText();
+    }
     
     moveBalls();
     drawBalls();
     
-    lastWorldM = worldM;
+    lastWorldM = worldMPos;
     lastButtons = buttons;
 }
 
@@ -126,8 +133,8 @@ function addBall(params = {}) {
 }
 function calcMouseMove() {
     let ret = {
-        x: worldM.x - lastWorldM.x,
-        y: worldM.y - lastWorldM.y
+        x: worldMPos.x - lastWorldM.x,
+        y: worldMPos.y - lastWorldM.y
     };
     
     return ret;
@@ -175,6 +182,35 @@ function toggleFollowCamera() {
 }
 
 
+function drawGuideText() {
+    ctx.beginPath();
+    ctx.fillStyle = 'black';
+    ctx.font = "15px Arial";
+    ctx.fillText('Hello There!', 10, 25);
+    ctx.fillText('in this project I tried', 10, 40);
+    ctx.fillText('to simulate gravity and gravition fields', 10, 55);
+    ctx.fillText('you can drag a ball & throw it by your mouse', 10, 70);
+    ctx.fillText('you can move camera (using arrows)', 10, 85);
+    ctx.fillText('you can zoom camera (dot button and that one that`s on the right)', 10, 100);
+    ctx.fillText('you can focus your camera on one of the balls (press F)', 10, 115);
+    ctx.fillText('you can create balls by clicking "create ball" and "create random ball"', 10, 130);
+    ctx.fillText('you can add a ball with random position and mass by clicking ↑', 10, 145);
+    ctx.fillText('Have fun!', 10, 160);
+    ctx.fillText('(press H to hide guide)', 10, 175);
+    ctx.closePath();
+}
+
+
+
 keyPressFunctions["102"] = function() {
     toggleFollowCamera();
+};
+keyPressFunctions["70"] = function() {
+    toggleFollowCamera();
+};
+keyPressFunctions["72"] = function() {
+    showGuideText = false;
+};
+keyPressFunctions["104"] = function() {
+    showGuideText = false;
 };

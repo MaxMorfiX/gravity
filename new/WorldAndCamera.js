@@ -56,8 +56,8 @@ function world2canvasPoint(pos, dontInvertY) {
         y: pos.y - camera.offset.y
     };
     if(camera.followBall !== false) {
-        canvasPoint.x -= camera.followBall.attractee.pos.x;
-        canvasPoint.y -= camera.followBall.attractee.pos.y;
+        canvasPoint.x -= camera.followBall.attractor.pos.x;
+        canvasPoint.y -= camera.followBall.attractor.pos.y;
     }
     
     canvasPoint.x /= camera.zoom;
@@ -77,8 +77,8 @@ function canvas2worldPoint(pos) {
     };
     
     if(camera.followBall !== false) {
-        worldPoint.x += camera.followBall.attractee.pos.x;
-        worldPoint.y += camera.followBall.attractee.pos.y;
+        worldPoint.x += camera.followBall.attractor.pos.x;
+        worldPoint.y += camera.followBall.attractor.pos.y;
     }    
     
     return worldPoint;

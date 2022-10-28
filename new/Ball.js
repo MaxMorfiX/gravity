@@ -2,7 +2,7 @@
 /* global globalG*/
 /* global camera*/
 /* global buttons*/
-/* global worldM*/
+/* global worldMPos*/
 /* global lastWorldM*/
 /* global canvas*/
 /* global fieldH*/
@@ -39,10 +39,10 @@ class Ball {
     id = 0;
     
     drawVecSettings = {
-        drawAttractVectorFromAttractee: true,
+        drawAttractVectorFromAttractee: false,
         drawAttractVectorFromAttractor: false,
         drawVelocity: true,
-        drawFinalForceVector: true
+        drawFinalForceVector: false
     };
     
     constructor(pos = vector2(fieldW/2, fieldH/2), parameters = {}) {
@@ -152,7 +152,7 @@ class Ball {
         
         if(this.isMouseCollided) {
             if(buttons.mouse) {
-                this.attractee.pos = worldM;
+                this.attractee.pos = worldMPos;
 //                this.color = "blue";
                 this.isHoldedByMouse = true;
                 lastHoldedBall = this;
@@ -196,10 +196,10 @@ class Ball {
         diff.magnitude = Math.sqrt(diff.x*diff.x + diff.y*diff.y);
         diff.ang = Math.atan(diff.y/diff.x);
         
-        let attractLenght = globalG*attractor.m/diff.magnitude;
+        let attractLenght = globalG*attractor.m/diff.magnitude*diff.magnitude;
         
-        if(attractLenght > 9999)
-            attractLenght = 9999;
+        if(attractLenght > 99999)
+            attractLenght = 99999;
         
         if(diff.x < 0) {
             diff.ang += d2R(180);
