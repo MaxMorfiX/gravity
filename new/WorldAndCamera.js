@@ -147,7 +147,7 @@ class Camera {
 }
 
 
-let camera = new Camera();
+let camera = new Camera({zoom: 10});
 
 
 //camera.startFollowBall(balls[3]);             

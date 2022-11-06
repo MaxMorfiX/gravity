@@ -12,7 +12,7 @@
 const attractCofficient = 0.001;
 const finalVelocityCofficient = 0.2;
 const globalG = 6.67384;
-let deltaT = 16;
+let deltaT = 16.6666666666666666666666;
 let world = new World();
 let activateConsoleUpdate = true;
 
@@ -30,11 +30,15 @@ function startGame() {
     
     fitToSize();
     
-    balls.push(new Ball(vector2(300, 210), {mass: 10000000, color: "yellow", radius: 20}));
-    balls.push(new Ball(vector2(430, 200), {mass: 30, color: "red"}));
-    balls.push(new Ball(vector2(330, 300), {mass: 30, color: "green"}));
-    balls.push(new Ball(vector2(400, 300), {mass: 1000, color: "blue"}));
-    balls.push(new Ball(vector2(250, 300), {mass: 20, color: "purple"}));
+    balls.push(new Ball(vector2(6800, 3300), {mass: 1000, color: "yellow", radius: 100}));
+    balls.push(new Ball(vector2(8800, 2700), {mass: 30, color: "green", radius: 30}));
+    balls.push(new Ball(vector2(8220, 3610), {mass: 100, color: "blue", radius: 50, velocity: vector2(0, 4000)}));
+    balls.push(new Ball(vector2(8100, 3600), {mass: 30, color: "red", radius: 30, velocity: vector2(0, 4000)}));
+    balls.push(new Ball(vector2(6800, 5300), {mass: 0.1, color: "purple", radius: 10}));
+    
+    for(let i = 0; i <= 5; i++) {
+        addBall({pos: 'random', mass: 'random'});
+    }
     
     lastHoldedBall = balls[2];
 
@@ -42,6 +46,8 @@ function startGame() {
     setInterval(update, deltaT);
     setInterval(checkMouseCollision, deltaT);
     setInterval(consoleUpdate, deltaT);
+    
+    deltaT = 166.6666666666666666666666666;
 }
 
 function update() {
@@ -50,12 +56,12 @@ function update() {
     
     worldMPos = canvas2worldPoint(vector2(mx, my));
     
+    moveBalls();
+    drawBalls();
+    
     if(showGuideText) {
         drawGuideText();
     }
-    
-    moveBalls();
-    drawBalls();
     
     lastWorldM = worldMPos;
     lastButtons = buttons;
@@ -127,6 +133,7 @@ function addBall(params = {}) {
     if(params.m || params.mass) {
         if(params.m || params.mass === "random" || params.m || params.mass === "rand") {
             ball.setMass(Math.random()*100);
+            ball.radius = ball.attractee.m*0.3;
         } else {
             ball.setMass(params.m || params.mass);
         }
@@ -186,7 +193,7 @@ function toggleFollowCamera() {
 
 function drawGuideText() {
     ctx.beginPath();
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = '#D5B6C3';
     ctx.font = "15px Arial";
     ctx.fillText('Hello There!', 10, 25);
     ctx.fillText('in this project I tried', 10, 40);
@@ -210,9 +217,12 @@ keyPressFunctions["102"] = function() {
 keyPressFunctions["70"] = function() {
     toggleFollowCamera();
 };
+keyPressFunctions["1072"] = function() {
+    toggleFollowCamera();
+};
 keyPressFunctions["72"] = function() {
-    showGuideText = false;
+    showGuideText = !showGuideText;
 };
 keyPressFunctions["104"] = function() {
-    showGuideText = false;
+    showGuideText = !showGuideText;
 };

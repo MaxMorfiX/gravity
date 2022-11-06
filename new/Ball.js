@@ -26,6 +26,8 @@ class Ball {
         m: 10
     }
     
+    velLimiterOnCenter = 0;
+    
     velocity = vector2();
     
     isHoldedByMouse = false;
@@ -73,6 +75,8 @@ class Ball {
         } 
         if(typeof params.enablePhysics !== 'undefined')
             this.enablePhysics = params.enablePhysics;
+        
+        this.velocity = params.vel || params.velocity || vector2();
     }
     
     draw() {
@@ -127,15 +131,7 @@ class Ball {
                 y: this.attractee.pos.y + forceAdd.y*0.003
             };
             world.drawLine(linePos1, linePos2, {color: "blue"});
-        }
-        
-        if(this.drawVecSettings.drawVelocity) {
-            let linePos2 = {
-                x: this.attractee.pos.x + this.velocity.x*0.003,
-                y: this.attractee.pos.y + this.velocity.y*0.003
-            };
-            world.drawLine(linePos1, linePos2, {color: "black"});
-        }
+        }        
     }
     
     calcMoving() {
@@ -143,8 +139,8 @@ class Ball {
             let mouseMove = calcMouseMove();
             
             this.velocity = {
-                x: (mouseMove.x - camera.x)*1000,
-                y: (mouseMove.y - camera.y)*1000
+                x: (mouseMove.x - camera.x)*1*deltaT,
+                y: (mouseMove.y - camera.y)*1*deltaT
             };
             
             this.isHoldedByMouse = false;
@@ -166,6 +162,19 @@ class Ball {
             
             this.attractee.pos.x += this.velocity.x*deltaT/100000;
             this.attractee.pos.y += this.velocity.y*deltaT/100000;
+            
+            if(this.drawVecSettings.drawVelocity) {
+                let linePos1 = {
+                    x: this.attractee.pos.x,
+                    y: this.attractee.pos.y
+                };
+                
+                let linePos2 = {
+                    x: this.attractee.pos.x + this.velocity.x*0.003,
+                    y: this.attractee.pos.y + this.velocity.y*0.003
+                };
+                world.drawLine(linePos1, linePos2, {color: "blue"});
+            }
         }
     }
     calcAttractionToAll() {
@@ -194,21 +203,28 @@ class Ball {
         let diff = vector2(attractor.pos.x - attractee.pos.x, attractor.pos.y - attractee.pos.y);
         
         diff.magnitude = Math.sqrt(diff.x*diff.x + diff.y*diff.y);
-        diff.ang = Math.atan(diff.y/diff.x);
         
-        let attractLenght = globalG*attractor.m/diff.magnitude*diff.magnitude;
+        let force = {
+            x: diff.x*attractor.m*globalG*deltaT,
+            y: diff.y*attractor.m*globalG*deltaT
+        };
+
+        force.x /= diff.magnitude*diff.magnitude;
+        force.y /= diff.magnitude*diff.magnitude;
         
-        if(attractLenght > 99999)
-            attractLenght = 99999;
+        force.magnitude = Math.sqrt(force.x*force.x + force.y*force.y);
         
-        if(diff.x < 0) {
-            diff.ang += d2R(180);
+        if(force.magnitude < 5) {
+            if(Math.abs(force.x) > this.velLimiterOnCenter) {
+                force.y *= this.velLimiterOnCenter/Math.abs(force.x);
+                force.x *= this.velLimiterOnCenter/Math.abs(force.x);
+            }
+            if(Math.abs(force.y) > this.velLimiterOnCenter) {
+                force.x *= this.velLimiterOnCenter/Math.abs(force.y);
+                force.y *= this.velLimiterOnCenter/Math.abs(force.y);
+            }
         }
         
-        let attractVector = {
-            x: cos(diff.ang)*attractLenght,
-            y: sin(diff.ang)*attractLenght
-        };
         if(this.drawVecSettings.drawAttractVectorFromAttractee) {
             let linePos1 = {
                 x: attractee.pos.x,
@@ -232,7 +248,7 @@ class Ball {
             world.drawLine(linePos1, linePos2, {color: "red"});
         }
 
-        return attractVector;
+        return force;
     }
     
     //////////////////////////////////
