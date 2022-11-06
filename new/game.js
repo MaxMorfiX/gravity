@@ -132,7 +132,7 @@ function addBall(params = {}) {
     }
     if(params.m || params.mass) {
         if(params.m || params.mass === "random" || params.m || params.mass === "rand") {
-            ball.setMass(Math.random()*100);
+            ball.setMass(Math.random()*120 + 30);
             ball.radius = ball.attractee.m*0.3;
         } else {
             ball.setMass(params.m || params.mass);
