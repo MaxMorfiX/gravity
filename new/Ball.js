@@ -130,7 +130,7 @@ class Ball {
                 x: this.attractee.pos.x + forceAdd.x*0.003,
                 y: this.attractee.pos.y + forceAdd.y*0.003
             };
-            world.drawLine(linePos1, linePos2, {color: "blue"});
+            world.drawLine(linePos1, linePos2, {color: "blue", width: this.radius*100});
         }        
     }
     
@@ -170,10 +170,10 @@ class Ball {
                 };
                 
                 let linePos2 = {
-                    x: this.attractee.pos.x + this.velocity.x*0.003,
-                    y: this.attractee.pos.y + this.velocity.y*0.003
+                    x: this.attractee.pos.x + this.velocity.x*0.01,
+                    y: this.attractee.pos.y + this.velocity.y*0.01
                 };
-                world.drawLine(linePos1, linePos2, {color: "blue"});
+                world.drawLine(linePos1, linePos2, {color: "blue", width: this.radius*0.5});
             }
         }
     }
