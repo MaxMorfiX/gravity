@@ -35,6 +35,8 @@ function startGame() {
     balls.push(new Ball(vector2(330, 300), {mass: 30, color: "green"}));
     balls.push(new Ball(vector2(400, 300), {mass: 1000, color: "blue"}));
     balls.push(new Ball(vector2(250, 300), {mass: 20, color: "purple"}));
+    
+    lastHoldedBall = balls[2];
 
     setInterval(calcCameraPosAndZoom, deltaT);
     setInterval(update, deltaT);
@@ -194,7 +196,7 @@ function drawGuideText() {
     ctx.fillText('you can zoom camera (dot button and that one that`s on the right)', 10, 100);
     ctx.fillText('you can focus your camera on one of the balls (press F)', 10, 115);
     ctx.fillText('you can create balls by clicking "create ball" and "create random ball"', 10, 130);
-    ctx.fillText('you can add a ball with random position and mass by clicking ↑', 10, 145);
+    ctx.fillText('you can add a ball with random position and mass by clicking "create random ball"', 10, 145);
     ctx.fillText('Have fun!', 10, 160);
     ctx.fillText('(press H to hide guide)', 10, 175);
     ctx.closePath();
