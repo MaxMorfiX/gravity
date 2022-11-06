@@ -34,7 +34,7 @@ function startGame() {
     balls.push(new Ball(vector2(8800, 2700), {mass: 30, color: "green", radius: 30}));
     balls.push(new Ball(vector2(8220, 3610), {mass: 100, color: "blue", radius: 50, velocity: vector2(0, 4000)}));
     balls.push(new Ball(vector2(8100, 3600), {mass: 30, color: "red", radius: 30, velocity: vector2(0, 4000)}));
-    balls.push(new Ball(vector2(6800, 5300), {mass: 0.1, color: "purple", radius: 10}));
+    balls.push(new Ball(vector2(6800, 5300), {mass: 1, color: "purple", radius: 20}));
     
     for(let i = 0; i <= 5; i++) {
         addBall({pos: 'random', mass: 'random'});
@@ -132,7 +132,7 @@ function addBall(params = {}) {
     }
     if(params.m || params.mass) {
         if(params.m || params.mass === "random" || params.m || params.mass === "rand") {
-            ball.setMass(Math.random()*120 + 30);
+            ball.setMass(Math.random()*100 + 40);
             ball.radius = ball.attractee.m*0.3;
         } else {
             ball.setMass(params.m || params.mass);
@@ -140,6 +140,12 @@ function addBall(params = {}) {
     }
     balls.push(ball);
 }
+function addBalls(count, params = {}) {
+    for(let i = 0; i < count; i++) {
+        addBall(params);
+    }
+}
+
 function calcMouseMove() {
     let ret = {
         x: worldMPos.x - lastWorldM.x,
